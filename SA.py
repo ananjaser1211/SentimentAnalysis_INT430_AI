@@ -20,3 +20,20 @@ csv_table.to_csv('dataset.csv',index=False)
 # Read the generated dataset file
 print("Importing converted Dataset file...\n")
 dataset = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False)
+
+# Static Variables
+CatArray = []
+TitleArray = []
+CommentArray = []
+StarArray = []
+ProdArray = []
+SentScoreArray = []
+sentTextArray = []
+
+for x in range(0, len(dataset)):
+    CatArray.append(dataset.iloc[x]["product_category"])
+    TitleArray.append(dataset.iloc[x]["product_title"])
+    CommentArray.append(dataset.iloc[x]["review_body"])
+    StarArray.append(dataset.iloc[x]["star_rating"])
+    ProdArray.append(dataset.iloc[x]["product_id"])
+
