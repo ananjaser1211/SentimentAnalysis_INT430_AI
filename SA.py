@@ -42,6 +42,9 @@ samplecnt = 0
 sample = 100
 # Printing Negative samples count
 commentsample = 5
+printneg = 1
+printpos = 1
+printnet = 1
 
 dataset = dataset.sample(sample)
 
@@ -62,19 +65,44 @@ for i in range(0, len(dataset)):
     SentScoreArray.append(t.sentiment.polarity)
 
 print("Data Analyzed...")
-print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments\n")
+if (printneg == 1):
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments\n")
+else:
+    print("\033[1;31;40mNegative printout is disabled!")
+if (printnet == 1):
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Neutral Comments\n")
+else:
+    print("\033[1;31;40mNeutral printout is disabled!")
+if (printpos == 1):
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Positive Comments\n")
+else:
+    print("\033[1;31;40mPositive printout is disabled!")
+    
+
 
 for s in range(0, len(SentScoreArray)):
     if(SentScoreArray[s] == 0):
         sentTextArray.append("Neutral")
+
+        if(samplecnt < commentsample and printnet == 1):
+
+            print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;34;40m Neutral")
+            print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
+            samplecnt = samplecnt + 1
         
     if(SentScoreArray[s] > 0):
         sentTextArray.append("Positive")
+
+        if(samplecnt < commentsample and printpos == 1):
+
+            print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;32;40m Positive")
+            print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
+            samplecnt = samplecnt + 1
         
     if(SentScoreArray[s] < 0):
         sentTextArray.append("Negative")
 
-        if(samplecnt < commentsample):
+        if(samplecnt < commentsample and printneg == 1):
 
             print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;31;40m Negative")
             print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
@@ -84,3 +112,4 @@ for s in range(0, len(SentScoreArray)):
 outframe = pd.DataFrame({'product_category':CatArray,'product_parent':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
 
 outframe.to_csv('sentiment_on_amazon.csv')
+print("\033[1;36;40mDate Exported to sentiment_on_amazon.csv")
