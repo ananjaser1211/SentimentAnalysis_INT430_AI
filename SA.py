@@ -31,6 +31,12 @@ ProdArray = []
 SentScoreArray = []
 sentTextArray = []
 
+# Custom Variables
+# Sample Size (How many reviews to read)
+sample = 10000
+
+dataset = dataset.sample(sample)
+print("Processing the first " + str(sample) +" Entries in the " + "Dataset...\n")
 for x in range(0, len(dataset)):
     CatArray.append(dataset.iloc[x]["product_category"])
     TitleArray.append(dataset.iloc[x]["product_title"])
