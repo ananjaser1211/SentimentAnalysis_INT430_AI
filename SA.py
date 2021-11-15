@@ -30,10 +30,13 @@ StarArray = []
 ProdArray = []
 SentScoreArray = []
 sentTextArray = []
+samplecnt = 0
 
 # Custom Variables
 # Sample Size (How many reviews to read)
 sample = 10000
+# Printing Negative samples count
+commentsample = 5
 
 dataset = dataset.sample(sample)
 print("Processing the first " + str(sample) +" Entries in the " + "Dataset...\n")
@@ -51,6 +54,7 @@ for i in range(0, len(dataset)):
     SentScoreArray.append(t.sentiment.polarity)
 
 print("Data Analyzed...")
+print("Printing the first " + str(commentsample) + " Negative Comments\n")
 
 for s in range(0, len(SentScoreArray)):
     if(SentScoreArray[s] == 0):
@@ -61,3 +65,9 @@ for s in range(0, len(SentScoreArray)):
         
     if(SentScoreArray[s] < 0):
         sentTextArray.append("Negative")
+
+        if(samplecnt < commentsample):
+
+            print("Comment Number " + str(s) + " | SENTIMENT: Negative")
+            print("Comment Content : "  + CommentArray[s] + "\n")
+            samplecnt = samplecnt + 1
