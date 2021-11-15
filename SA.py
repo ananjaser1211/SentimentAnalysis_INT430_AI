@@ -1,6 +1,7 @@
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
+from textblob import TextBlob
 import os
 
 # Data set File name / path
@@ -37,3 +38,20 @@ for x in range(0, len(dataset)):
     StarArray.append(dataset.iloc[x]["star_rating"])
     ProdArray.append(dataset.iloc[x]["product_id"])
 
+# Use textblob to get the sentiment polarity score from review_body, which is the actual written review
+print("Analyzing Sentiment...\n")
+for i in range(0, len(dataset)):
+    t = TextBlob(dataset.iloc[i]["review_body"])
+    SentScoreArray.append(t.sentiment.polarity)
+
+print("Data Analyzed...")
+
+for s in range(0, len(SentScoreArray)):
+    if(SentScoreArray[s] == 0):
+        sentTextArray.append("Neutral")
+        
+    if(SentScoreArray[s] > 0):
+        sentTextArray.append("Positive")
+        
+    if(SentScoreArray[s] < 0):
+        sentTextArray.append("Negative")
