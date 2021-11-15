@@ -16,3 +16,7 @@ print("Preparing Dataset file " + os.path.splitext(dataset_file)[0] + "...")
 print("Converting Dataset to supported CSV format... \nIgnoring broken entries...")
 csv_table=pd.read_table(dataset_file,sep='\t',error_bad_lines=False,warn_bad_lines=False)
 csv_table.to_csv('dataset.csv',index=False)
+
+# Read the generated dataset file
+print("Importing converted Dataset file...\n")
+dataset = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False)
