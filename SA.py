@@ -41,6 +41,7 @@ commentsample = 5
 dataset = dataset.sample(sample)
 print("Processing the first " + str(sample) +" Entries in the " + "Dataset...\n")
 for x in range(0, len(dataset)):
+    print(f"{x/len(dataset)*100:0.1f} %", end="\r")
     CatArray.append(dataset.iloc[x]["product_category"])
     TitleArray.append(dataset.iloc[x]["product_title"])
     CommentArray.append(dataset.iloc[x]["review_body"])
@@ -51,6 +52,7 @@ for x in range(0, len(dataset)):
 print("Analyzing Sentiment...\n")
 for i in range(0, len(dataset)):
     t = TextBlob(dataset.iloc[i]["review_body"])
+    print(f"{i/len(dataset)*100:0.1f} %", end="\r")
     SentScoreArray.append(t.sentiment.polarity)
 
 print("Data Analyzed...")
