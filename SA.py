@@ -35,12 +35,14 @@ StarArray = []
 ProdArray = []
 SentScoreArray = []
 sentTextArray = []
-samplecnt = 0
+cntpos = 0
+cntneg = 0
+cntnet = 0
 
 # Custom Variables
 # Sample Size (How many reviews to read)
 sample = 100
-# Printing Negative samples count
+# Print stacks of sentiments were commentsample is how many will be printed of each polarity
 commentsample = 5
 printneg = 1
 printpos = 1
@@ -84,29 +86,29 @@ for s in range(0, len(SentScoreArray)):
     if(SentScoreArray[s] == 0):
         sentTextArray.append("Neutral")
 
-        if(samplecnt < commentsample and printnet == 1):
+        if(cntnet < commentsample and printnet == 1):
 
             print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;34;40m Neutral")
             print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
-            samplecnt = samplecnt + 1
+            cntnet = cntnet + 1
         
     if(SentScoreArray[s] > 0):
         sentTextArray.append("Positive")
 
-        if(samplecnt < commentsample and printpos == 1):
+        if(cntpos < commentsample and printpos == 1):
 
             print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;32;40m Positive")
             print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
-            samplecnt = samplecnt + 1
+            cntpos = cntpos + 1
         
     if(SentScoreArray[s] < 0):
         sentTextArray.append("Negative")
 
-        if(samplecnt < commentsample and printneg == 1):
+        if(cntneg < commentsample and printneg == 1):
 
             print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;31;40m Negative")
             print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
-            samplecnt = samplecnt + 1
+            cntneg = cntneg + 1
 
 # Output a new CSV file with used information + sentiment values
 outframe = pd.DataFrame({'product_category':CatArray,'product_parent':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
