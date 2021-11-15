@@ -73,3 +73,8 @@ for s in range(0, len(SentScoreArray)):
             print("Comment Number " + str(s) + " | SENTIMENT: Negative")
             print("Comment Content : "  + CommentArray[s] + "\n")
             samplecnt = samplecnt + 1
+
+# Output a new CSV file with used information + sentiment values
+outframe = pd.DataFrame({'product_category':CatArray,'Product_ID':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
+
+outframe.to_csv('sentiment_on_amazon.csv')
