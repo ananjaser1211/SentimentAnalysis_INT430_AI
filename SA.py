@@ -12,7 +12,7 @@ old_dataset = 'dataset.csv'
 if os.path.exists(old_dataset):
     print("Clean up old datasets...")
     os.remove(old_dataset)
-print("Preparing Dataset file ...")
+print("Preparing Dataset file " + os.path.splitext(dataset_file)[0] + "...")
 print("Converting Dataset to supported CSV format... \nIgnoring broken entries...")
 csv_table=pd.read_table(dataset_file,sep='\t',error_bad_lines=False,warn_bad_lines=False)
 csv_table.to_csv('dataset.csv',index=False)
