@@ -38,15 +38,60 @@ sentTextArray = []
 cntpos = 0
 cntneg = 0
 cntnet = 0
+# user input
+yes = ['y' , 'Y']
+no = ['n' , 'N']
 
 # Custom Variables
-# Sample Size (How many reviews to read)
-sample = 100
+while True:
+    sample = input("\033[1;33;40mHow many Samples do you want analyized?\n\033[1;37;40m")
+    if sample.isnumeric():
+        sample = int(sample)
+        break
+    else:
+        print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
+
 # Print stacks of sentiments were commentsample is how many will be printed of each polarity
-commentsample = 5
-printneg = 1
-printpos = 1
-printnet = 1
+while True:
+    commentsample = input("\033[1;33;40mHow many comments do you want displayed for each polarity?\n\033[1;37;40m")
+    if commentsample.isnumeric():
+        commentsample = int(commentsample)
+        break
+    else:
+        print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
+
+while True:
+    printneg = input("\033[1;33;40mDo you want to print Negative comments ? (y,n)\n\033[1;37;40m")
+    if printneg in yes:
+        printneg = 1
+        break
+    elif printneg in no:
+        printneg = 0
+        break
+    else:
+        print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
+
+while True:
+    printnet = input("\033[1;33;40mDo you want to print Neutral comments ? (y,n)\n\033[1;37;40m")
+    if printnet in yes:
+        printnet = 1
+        break
+    elif printnet in no:
+        printnet = 0
+        break
+    else:
+        print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
+
+while True:
+    printpos = input("\033[1;33;40mDo you want to print Positive comments ? (y,n)\n\033[1;37;40m")
+    if printpos in yes:
+        printpos = 1
+        break
+    elif printpos in no:
+        printpos = 0
+        break
+    else:
+        print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
 dataset = dataset.sample(sample)
 
@@ -68,15 +113,15 @@ for i in range(0, len(dataset)):
 
 print("Data Analyzed...")
 if (printneg == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments\n")
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments")
 else:
     print("\033[1;31;40mNegative printout is disabled!")
 if (printnet == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Neutral Comments\n")
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Neutral Comments")
 else:
     print("\033[1;31;40mNeutral printout is disabled!")
 if (printpos == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Positive Comments\n")
+    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Positive Comments")
 else:
     print("\033[1;31;40mPositive printout is disabled!")
     
