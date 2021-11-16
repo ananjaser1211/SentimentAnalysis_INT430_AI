@@ -23,7 +23,7 @@ cntnet = 0
 # Disable file size check when debugging
 debug=1
 
-# Amazon AWS Dataset
+# Amazon AWS Dataset Array
 
 datasets_url = [
 'https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Watches_v1_00.tsv.gz',
@@ -87,7 +87,7 @@ while True:
     else:
         print("\033[1;31;40mPlease Enter a number within the range of avalible datasets\033[1;37;40m")
 
-# Data set File name / path
+# Dataset file name / path
 dataset_url = datasets_url[cat-1]
 fname = os.path.basename(dataset_url)
 if os.path.exists(fname):
