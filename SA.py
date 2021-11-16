@@ -3,11 +3,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 from textblob import TextBlob
 import wget
-import tarfile
 import os
 import requests
 
-# Static Variables
+# Variables
 yes = ['y' , 'Y']
 no = ['n' , 'N']
 CatArray = []
