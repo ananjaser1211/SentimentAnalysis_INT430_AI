@@ -2,14 +2,39 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 from textblob import TextBlob
+import wget
+import tarfile
 import os
 
+# Vairables
+# user input
+yes = ['y' , 'Y']
+no = ['n' , 'N']
+
 # Data set File name / path
-dataset_file='amazon_reviews_us_Mobile_Electronics_v1_00.tsv'
-if os.path.exists(dataset_file):
-    print("\033[1;36;40mUsing " + os.path.splitext(dataset_file)[0] + " Dataset file...")
+dataset_url = 'https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Digital_Video_Games_v1_00.tsv.gz'
+fname = os.path.basename(dataset_url)
+if os.path.exists(fname):
+    while True:
+        read = input("\033[1;33;40mDataset is downloaded already, would you like to redownload? (y,n)\n\033[1;37;40m")
+        if read in yes:
+                print("\033[1;36;40mDownloading \033[1;33;40m" + dataset_url + "\033[1;36;40m Dataset file...\n")
+                os.remove(fname)
+                dataset_file = wget.download(dataset_url)
+                break
+        elif read in no:
+                dataset_file = fname
+                break
+        else:
+            print("\033[1;31;40mEnter either (Y or N)\033[1;37;40m")
 else:
-    print("\033[1;31;40mDataset file is missing")
+    print("\033[1;36;40mDownloading \033[1;33;40m" + dataset_url + "\033[1;36;40m Dataset file...\n")
+    dataset_file = wget.download(dataset_url)
+
+if os.path.exists(dataset_file):
+    print("\033[1;36;40m\nUsing " + os.path.splitext(dataset_file)[0] + " Dataset file...\n")
+else:
+    print("\033[1;31;40mDataset file is missing, Check URL")
     exit()
 
 # Convert amazon dataset to CSV container
@@ -38,9 +63,6 @@ sentTextArray = []
 cntpos = 0
 cntneg = 0
 cntnet = 0
-# user input
-yes = ['y' , 'Y']
-no = ['n' , 'N']
 
 # Custom Variables
 while True:
