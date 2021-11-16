@@ -159,8 +159,8 @@ for s in range(0, len(SentScoreArray)):
 
         if(cntnet < commentsample and printnet == 1):
 
-            print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;34;40m Neutral")
-            print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
+            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \n")
+            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntnet = cntnet + 1
         
     if(SentScoreArray[s] > 0):
@@ -168,8 +168,8 @@ for s in range(0, len(SentScoreArray)):
 
         if(cntpos < commentsample and printpos == 1):
 
-            print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;32;40m Positive")
-            print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
+            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \n")
+            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntpos = cntpos + 1
         
     if(SentScoreArray[s] < 0):
@@ -177,8 +177,8 @@ for s in range(0, len(SentScoreArray)):
 
         if(cntneg < commentsample and printneg == 1):
 
-            print("\033[1;36;40mComment Number " + str(s) + " | SENTIMENT:\033[1;31;40m Negative")
-            print("\033[1;36;40mComment Content : \033[1;33;40m"  + CommentArray[s] + "\n")
+            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \n")
+            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntneg = cntneg + 1
 
 # Output a new CSV file with used information + sentiment values
