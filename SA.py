@@ -7,10 +7,24 @@ import tarfile
 import os
 import requests
 
-# Vairables
-# user input
+# Static Variables
 yes = ['y' , 'Y']
 no = ['n' , 'N']
+CatArray = []
+TitleArray = []
+CommentArray = []
+StarArray = []
+ProdArray = []
+SentScoreArray = []
+sentTextArray = []
+cntpos = 0
+cntneg = 0
+cntnet = 0
+
+# Disable file size check when debugging
+debug=1
+
+# Amazon AWS Dataset
 
 datasets_url = [
 'https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Watches_v1_00.tsv.gz',
@@ -48,10 +62,9 @@ datasets_url = [
 'https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Automotive_v1_00.tsv.gz',
 'https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Apparel_v1_00.tsv.gz']
 
-print("\033[1;33;40mGathering Data from AmazonAWS, Please wait...")
 
-# Disable file size check when debugging
-debug=1
+############# Dataset Downloader
+print("\033[1;33;40mGathering Data from AmazonAWS, Please wait...")
 
 for i in range(len(datasets_url)):
   dtname = os.path.basename(datasets_url[i])
@@ -101,6 +114,8 @@ else:
     print("\033[1;31;40mDataset file is missing, Check URL")
     exit()
 
+############# Dataset Preperations
+
 # Convert amazon dataset to CSV container
 # Delete previously generated dataset files
 old_dataset = 'dataset.csv'
@@ -116,19 +131,8 @@ csv_table.to_csv('dataset.csv',index=False)
 print("\033[1;36;40mImporting converted Dataset file...\n")
 dataset = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False)
 
-# Static Variables
-CatArray = []
-TitleArray = []
-CommentArray = []
-StarArray = []
-ProdArray = []
-SentScoreArray = []
-sentTextArray = []
-cntpos = 0
-cntneg = 0
-cntnet = 0
-
-# Custom Variables
+############# Custom user Variables
+# Sample size variable
 while True:
     sample = input("\033[1;33;40mThere are \033[1;32;40m" + str(len(dataset)) + "\033[1;33;40m Samples found | " + "Enter the number of samples you want analyzed...\n\033[1;37;40m")
     if sample.isnumeric():
@@ -143,7 +147,7 @@ while True:
     else:
         print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
 
-# Print stacks of sentiments were commentsample is how many will be printed of each polarity
+# Polarity display count
 while True:
     commentsample = input("\033[1;33;40mHow many comments do you want displayed for each polarity?\n\033[1;37;40m")
     if commentsample.isnumeric():
@@ -152,6 +156,7 @@ while True:
     else:
         print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
 
+# Display negative comments
 while True:
     printneg = input("\033[1;33;40mDo you want to print Negative comments ? (y,n)\n\033[1;37;40m")
     if printneg in yes:
@@ -163,6 +168,7 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
+# Display Neutral comments
 while True:
     printnet = input("\033[1;33;40mDo you want to print Neutral comments ? (y,n)\n\033[1;37;40m")
     if printnet in yes:
@@ -174,6 +180,7 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
+# Display Positive comments
 while True:
     printpos = input("\033[1;33;40mDo you want to print Positive comments ? (y,n)\n\033[1;37;40m")
     if printpos in yes:
@@ -185,6 +192,9 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
+############# Dataset manipulation / textblob
+
+# Create arrays out of dataset
 print("\033[1;32;40mProcessing " + str(sample) +" Entries in the " + "Dataset...\n")
 for x in range(0, len(dataset)):
     print(f"{x/len(dataset)*100:0.1f} %", end="\r")
@@ -201,6 +211,7 @@ for i in range(0, len(dataset)):
     print(f"{i/len(dataset)*100:0.1f} %", end="\r")
     SentScoreArray.append(t.sentiment.polarity)
 
+# Polarity user selection
 print("Data Analyzed...")
 if (printneg == 1):
     print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments")
@@ -215,8 +226,7 @@ if (printpos == 1):
 else:
     print("\033[1;31;40mPositive printout is disabled!")
     
-
-
+# Print out data to console and append them to arrays
 for s in range(0, len(SentScoreArray)):
     if(SentScoreArray[s] == 0):
         sentTextArray.append("Neutral")
