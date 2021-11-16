@@ -47,6 +47,12 @@ while True:
     sample = input("\033[1;33;40mHow many Samples do you want analyized?\n\033[1;37;40m")
     if sample.isnumeric():
         sample = int(sample)
+        dataset = dataset.sample(sample)
+        if sample > len(dataset):
+            print("\033[1;31;40mYour Requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of your dataset!")
+            print("\033[1;31;40mSample size is adjusted to max dataset size of \033[1;37;40m" + str(len(dataset)))
+            sample = len(dataset)
+            dataset = dataset.sample(sample)
         break
     else:
         print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
@@ -93,9 +99,7 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
-dataset = dataset.sample(sample)
-
-print("\033[1;32;40mProcessing the first " + str(sample) +" Entries in the " + "Dataset...\n")
+print("\033[1;32;40mProcessing " + str(sample) +" Entries in the " + "Dataset...\n")
 for x in range(0, len(dataset)):
     print(f"{x/len(dataset)*100:0.1f} %", end="\r")
     CatArray.append(dataset.iloc[x]["product_category"])
