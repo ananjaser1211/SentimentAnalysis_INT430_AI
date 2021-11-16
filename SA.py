@@ -130,7 +130,7 @@ cntnet = 0
 
 # Custom Variables
 while True:
-    sample = input("\033[1;33;40mHow many Samples do you want analyized?\n\033[1;37;40m")
+    sample = input("\033[1;33;40mThere are \033[1;32;40m" + str(len(dataset)) + "\033[1;33;40m Samples found | " + "Enter the number of samples you want analyzed...\n\033[1;37;40m")
     if sample.isnumeric():
         sample = int(sample)
         dataset = dataset.sample(sample)
