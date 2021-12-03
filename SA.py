@@ -5,6 +5,7 @@ from textblob import TextBlob
 import wget
 import os
 import requests
+import webbrowser
 
 # Variables
 yes = ['y' , 'Y']
@@ -14,6 +15,8 @@ TitleArray = []
 CommentArray = []
 StarArray = []
 ProdArray = []
+TitleArrayInfo = []
+ProdArrayInfo = []
 SentScoreArray = []
 sentTextArray = []
 cntpos = 0
@@ -128,7 +131,10 @@ csv_table.to_csv('dataset.csv',index=False)
 
 # Read the generated dataset file
 print("\033[1;36;40mImporting converted Dataset file...\n")
-dataset = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False)
+dataset = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False,encoding='utf8')
+dfinfo = pd.read_csv("dataset.csv",low_memory=False,error_bad_lines=False,warn_bad_lines=False,encoding='utf8')
+dataset.sort_values(by=['product_title'])
+dfinfo.sort_values(by=['product_title'])
 
 ############# Custom user Variables
 # Sample size variable
@@ -137,14 +143,65 @@ while True:
     if sample.isnumeric():
         sample = int(sample)
         dataset = dataset.sample(sample)
+        dfinfo = dfinfo.sample(sample)
         if sample > len(dataset):
             print("\033[1;31;40mYour Requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of your dataset!")
             print("\033[1;31;40mSample size is adjusted to max dataset size of \033[1;37;40m" + str(len(dataset)))
             sample = len(dataset)
             dataset = dataset.sample(sample)
+            dfinfo = dfinfo.sample(sample)
         break
     else:
         print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
+
+
+while True:
+    classify = input("\033[1;33;40mType Yes to scan a specific product, otherwise scan the entire category (y,n)\n\033[1;37;40m")
+    if classify in no:
+        classify="0"
+        break
+    elif classify in yes:
+        classify="1"
+        break
+    else:
+        print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
+
+if (classify == "1"):
+############# Product_ID Display
+    dfinfo.drop_duplicates(subset ="product_id",
+                     keep = "first", inplace = True)
+
+    if os.path.exists("product_info.txt"):
+        os.remove("product_info.txt")
+
+    txt = open("product_info.txt", "w", encoding="utf-8")
+    for x in range(0, len(dfinfo)):
+        TitleArrayInfo.append(dfinfo.iloc[x]["product_title"])
+        ProdArrayInfo.append(dfinfo.iloc[x]["product_id"])
+        txt.write("Product Name: " + TitleArrayInfo[x] + "\nSearchable ID: " + ProdArrayInfo[x])
+        txt.write("\n#########################\n")
+    txt.close()
+
+    while True:
+        prodprint = input("\033[1;33;40mType yes to open the Avalible products in your texteditor, otherwise print in the command-line (y,n)\n\033[1;37;40m")
+        if prodprint in no:
+            for x in range(0, len(dfinfo)):
+                print(str(x+1)  + " Product " + dfinfo.iloc[x]["product_title"] + " Searchable ID : " +  dfinfo.iloc[x]["product_id"] + "\n")
+            break
+        elif prodprint in yes:
+            webbrowser.open("product_info.txt")
+            break
+        else:
+            print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
+
+    while True:
+        spec_prod = input("\033[1;31;40mPlease copy the desired product ID from your text editor, and paste it here\n\033[1;37;40m")
+        if not spec_prod:
+            print("\033[1;31;40mPlease enter a product ID\n\033[1;37;40m")
+        else:
+            break
+    print("\033[1;33;40mWe will scan " + str(spec_prod) + "\n\033[1;37;40m")
+    dataset = dataset[dataset['product_id'] == spec_prod]
 
 # Polarity display count
 while True:
@@ -201,7 +258,7 @@ for x in range(0, len(dataset)):
     TitleArray.append(dataset.iloc[x]["product_title"])
     CommentArray.append(dataset.iloc[x]["review_body"])
     StarArray.append(dataset.iloc[x]["star_rating"])
-    ProdArray.append(dataset.iloc[x]["product_parent"])
+    ProdArray.append(dataset.iloc[x]["product_id"])
 
 # Use textblob to get the sentiment polarity score from review_body, which is the actual written review
 print("\033[1;32;40mAnalyzing Sentiment...\n")
@@ -231,8 +288,11 @@ for s in range(0, len(SentScoreArray)):
         sentTextArray.append("Neutral")
 
         if(cntnet < commentsample and printnet == 1):
+            if classify == "1":
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \n")
+            else:
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
 
-            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntnet = cntnet + 1
         
@@ -240,8 +300,10 @@ for s in range(0, len(SentScoreArray)):
         sentTextArray.append("Positive")
 
         if(cntpos < commentsample and printpos == 1):
-
-            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \n")
+            if classify == "1":
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \n")
+            else:
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntpos = cntpos + 1
         
@@ -249,13 +311,15 @@ for s in range(0, len(SentScoreArray)):
         sentTextArray.append("Negative")
 
         if(cntneg < commentsample and printneg == 1):
-
-            print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \n")
+            if classify == "1":
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \n")
+            else:
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntneg = cntneg + 1
 
 # Output a new CSV file with used information + sentiment values
-outframe = pd.DataFrame({'product_category':CatArray,'product_parent':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
+#outframe = pd.DataFrame({'product_category':CatArray,'product_parent':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
 
-outframe.to_csv('sentiment_on_amazon.csv')
+#outframe.to_csv('sentiment_on_amazon.csv')
 print("\033[1;36;40mDate Exported to sentiment_on_amazon.csv")
