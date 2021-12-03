@@ -286,40 +286,44 @@ else:
 for s in range(0, len(SentScoreArray)):
     if(SentScoreArray[s] == 0):
         sentTextArray.append("Neutral")
-
         if(cntnet < commentsample and printnet == 1):
             if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \n")
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \n")
             else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;34;40m Neutral \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
-
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntnet = cntnet + 1
         
     if(SentScoreArray[s] > 0):
         sentTextArray.append("Positive")
-
         if(cntpos < commentsample and printpos == 1):
             if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \n")
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \n")
             else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;32;40m Positive \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntpos = cntpos + 1
         
     if(SentScoreArray[s] < 0):
         sentTextArray.append("Negative")
-
         if(cntneg < commentsample and printneg == 1):
             if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \n")
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \n")
             else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | SENTIMENT:\033[1;31;40m Negative \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
             print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
             cntneg = cntneg + 1
 
+# To Do: Implement Star rating
+# To Do : export csv 
+
 # Output a new CSV file with used information + sentiment values
 #outframe = pd.DataFrame({'product_category':CatArray,'product_parent':ProdArray, 'product_title':TitleArray, 'Review':CommentArray, 'Star Rating':StarArray, 'Sentiment Score':SentScoreArray, 'Sentiment Polarity':sentTextArray})
-
+#tmp = sum(SentScoreArray) / len(SentScoreArray)
+#if classify == "1":
+#    print("Average Sentiment of Product " + str("{:.2f}".format((tmp * 100))))
+#else:
+#    print("Average Sentiment of Category " + str("{:.2f}".format((tmp * 100))))
 #outframe.to_csv('sentiment_on_amazon.csv')
-print("\033[1;36;40mDate Exported to sentiment_on_amazon.csv")
+#print(SentScoreArray.mean())
+#print("\033[1;36;40mDate Exported to sentiment_on_amazon.csv")
