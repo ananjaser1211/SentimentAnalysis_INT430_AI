@@ -4,8 +4,18 @@ import pandas as pd
 from textblob import TextBlob
 import wget
 import os
+# Disable TF warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import requests
 import webbrowser
+
+# Flair
+from flair.models import TextClassifier
+from flair.data import Sentence
+
+
+# Load english sentiment
+classifier = TextClassifier.load('en-sentiment')
 
 # Variables
 yes = ['y' , 'Y']
@@ -22,6 +32,8 @@ sentTextArray = []
 cntpos = 0
 cntneg = 0
 cntnet = 0
+legacy = 0
+commentsample = 0
 
 # Disable file size check when debugging
 debug=1
@@ -166,6 +178,20 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
+# Algo
+while True:
+    legacy = input("\033[1;33;40mType 1 to use TextBlob (Nayive Bayes) or 2 to use Flair (Custom Algo) \n\033[1;37;40m")
+    if legacy.isnumeric() and legacy == "1":
+        legacy = "1"
+        print("\033[1;31;40mUsing TextBlob...\033[1;37;40m")
+        break
+    elif legacy.isnumeric() and legacy == "2":
+        legacy = "0"
+        print("\033[1;31;40mUsing Flair...\033[1;37;40m")
+        break
+    else:
+        print("\033[1;31;40mPlease Enter one or two\033[1;37;40m")
+
 if (classify == "1"):
 ############# Product_ID Display
     dfinfo.drop_duplicates(subset ="product_id",
@@ -248,6 +274,18 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
+    # Display Positive comments
+    while True:
+        printpos = input("\033[1;33;40mDo you want to print Positive comments ? (y,n)\n\033[1;37;40m")
+        if printpos in yes:
+            printpos = 1
+            break
+        elif printpos in no:
+            printpos = 0
+            break
+        else:
+            print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
+
 ############# Dataset manipulation / textblob
 
 # Create arrays out of dataset
@@ -262,57 +300,98 @@ for x in range(0, len(dataset)):
 
 # Use textblob to get the sentiment polarity score from review_body, which is the actual review
 print("\033[1;32;40mAnalyzing Sentiment...\n")
-for i in range(0, len(dataset)):
-    t = TextBlob(dataset.iloc[i]["review_body"])
-    print(f"{i/len(dataset)*100:0.1f} %", end="\r")
-    SentScoreArray.append(t.sentiment.polarity)
-
+if legacy == "1":
+    for i in range(0, len(dataset)):
+            t = TextBlob(dataset.iloc[i]["review_body"])
+            print(f"{i/len(dataset)*100:0.1f} %", end="\r")
+            SentScoreArray.append(t.sentiment.polarity)
+else:
+    for s in range(0, len(dataset)):
+            sentence = Sentence(dataset.iloc[s]["review_body"])
+            classifier.predict(sentence)
+            SentScoreArray.append(sentence.labels)
+            score = sentence.labels
+            print(f"{s/len(dataset)*100:0.1f} %", end="\r")
+            if "POSITIVE" in str(score):
+                sentTextArray.append("Positive")
+                if(cntpos < commentsample and printpos == 1):
+                    if classify == "1":
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Sentiment/Accuracy:\033[1;32;40m " + str(score) + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                    else:
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Sentiment/Accuracy:\033[1;32;40m " + str(score) + " \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntpos = cntpos + 1  
+                    
+            elif "NEGATIVE" in str(score):
+                sentTextArray.append("Negative")
+                if(cntneg < commentsample and printneg == 1):
+                    if classify == "1":
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m" + "\033[1;36;40m | Sentiment/Accuracy:\033[1;31;40m " + str(score) + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                    else:
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m " + "\033[1;36;40m | Sentiment/Accuracy:\033[1;31;40m " + str(score) + " \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntneg = cntneg + 1
+            else:
+                sentTextArray.append("Neutral")
+                if(cntnet < commentsample and printnet == 1):
+                    if classify == "1":
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s]  + "\033[1;36;40m | Sentiment/Accuracy:\033[1;34;40m " + str(score) + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                    else:
+                        print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] +  "\033[1;36;40m | Sentiment/Accuracy:\033[1;34;40m " + str(score) + " \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                        print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntnet = cntnet + 1
 # Polarity user selection
-print("Data Analyzed...")
-if (printneg == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments")
-else:
-    print("\033[1;31;40mNegative printout is disabled!")
-if (printnet == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Neutral Comments")
-else:
-    print("\033[1;31;40mNeutral printout is disabled!")
-if (printpos == 1):
-    print("\033[1;36;40mPrinting the first " + str(commentsample) + " Positive Comments")
-else:
-    print("\033[1;31;40mPositive printout is disabled!")
+if legacy == "1":
+    print("Data Analyzed...")
+    if (printneg == 1):
+        print("\033[1;36;40mPrinting the first " + str(commentsample) + " Negative Comments")
+    else:
+        print("\033[1;31;40mNegative printout is disabled!")
+    if (printnet == 1):
+        print("\033[1;36;40mPrinting the first " + str(commentsample) + " Neutral Comments")
+    else:
+        print("\033[1;31;40mNeutral printout is disabled!")
+    if (printpos == 1):
+        print("\033[1;36;40mPrinting the first " + str(commentsample) + " Positive Comments")
+    else:
+        print("\033[1;31;40mPositive printout is disabled!")
     
 # Print out data to console and append them to arrays
-for s in range(0, len(SentScoreArray)):
-    if(SentScoreArray[s] == 0):
-        sentTextArray.append("Neutral")
-        if(cntnet < commentsample and printnet == 1):
-            if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \n")
-            else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
-            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
-            cntnet = cntnet + 1
+if legacy == "1":
+    for s in range(0, len(SentScoreArray)):
+        if(SentScoreArray[s] == 0):
+            sentTextArray.append("Neutral")
+            if(cntnet < commentsample and printnet == 1):
+                if classify == "1":
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \n")
+                else:
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;34;40m Neutral \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntnet = cntnet + 1
         
-    if(SentScoreArray[s] > 0):
-        sentTextArray.append("Positive")
-        if(cntpos < commentsample and printpos == 1):
-            if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \n")
-            else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
-            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
-            cntpos = cntpos + 1
+        if(SentScoreArray[s] > 0):
+            sentTextArray.append("Positive")
+            if(cntpos < commentsample and printpos == 1):
+                if classify == "1":
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \n")
+                else:
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;32;40m " + str("{:.2f}".format((SentScoreArray[s] * 100))) + "% Positive \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntpos = cntpos + 1
         
-    if(SentScoreArray[s] < 0):
-        sentTextArray.append("Negative")
-        if(cntneg < commentsample and printneg == 1):
-            if classify == "1":
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \n")
-            else:
-                print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
-            print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
-            cntneg = cntneg + 1
+        if(SentScoreArray[s] < 0):
+            sentTextArray.append("Negative")
+            if(cntneg < commentsample and printneg == 1):
+                if classify == "1":
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \n")
+                else:
+                    print("\033[1;36;40mProduct Name : \033[1;33;40m" + TitleArray[s] + "\033[1;36;40m | Comment Number : \033[1;33;40m" + str(s) + "\033[1;36;40m | Sentiment Accuracy:\033[1;31;40m " + str("{:.2f}".format((SentScoreArray[s] * -100))) + "%  Negative \033[1;36;40mProduct ID : \033[1;33;40m" + ProdArray[s] + "\n")
+                print("\033[1;36;40mComment Content : \033[1;37;40m"  + CommentArray[s] + "\n")
+                cntneg = cntneg + 1
+
 
 # To Do: Implement Star rating
 # To Do : export csv 
