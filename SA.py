@@ -274,18 +274,6 @@ while True:
     else:
         print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
-    # Display Positive comments
-    while True:
-        printpos = input("\033[1;33;40mDo you want to print Positive comments? (y,n)\n\033[1;37;40m")
-        if printpos in yes:
-            printpos = 1
-            break
-        elif printpos in no:
-            printpos = 0
-            break
-        else:
-            print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
-
 ############# Dataset manipulation / textblob
 
 # Create arrays out of dataset
