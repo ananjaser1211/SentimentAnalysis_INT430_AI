@@ -82,20 +82,20 @@ for i in range(len(datasets_url)):
     print("\033[1;36;40mDataset Category \033[1;37;40m" + str(i+1) + "\033[1;36;40m = " + dtname)
 
 while True:
-    cat = input("\033[1;33;40mPlease type the number of the needed dataset category\n\033[1;37;40m")
+    cat = input("\033[1;33;40mPlease enter the number of the required dataset category\n\033[1;37;40m")
     if cat.isnumeric() and int(cat) < int(len(datasets_url) + 1):
         cat = int(cat)
         print("\033[1;36;40mSelected : " + os.path.basename(datasets_url[cat-1]))
         break
     else:
-        print("\033[1;31;40mPlease Enter a number within the range of avalible datasets\033[1;37;40m")
+        print("\033[1;31;40mPlease enter a number within the range of available datasets\033[1;37;40m")
 
 # Dataset file name / path
 dataset_url = datasets_url[cat-1]
 fname = os.path.basename(dataset_url)
 if os.path.exists(fname):
     while True:
-        read = input("\033[1;33;40mDataset is downloaded already, would you like to redownload? (y,n)\n\033[1;37;40m")
+        read = input("\033[1;33;40mDataset is already downloaded, would you like to re-download? (y,n)\n\033[1;37;40m")
         if read in yes:
                 print("\033[1;36;40mDownloading \033[1;33;40m" + dataset_url + "\033[1;36;40m Dataset file...\n")
                 os.remove(fname)
@@ -105,7 +105,7 @@ if os.path.exists(fname):
                 dataset_file = fname
                 break
         else:
-            print("\033[1;31;40mEnter either (Y or N)\033[1;37;40m")
+            print("\033[1;31;40mEnter (Y or N)\033[1;37;40m")
 else:
     print("\033[1;36;40mDownloading \033[1;33;40m" + dataset_url + "\033[1;36;40m Dataset file...\n")
     dataset_file = wget.download(dataset_url)
@@ -113,7 +113,7 @@ else:
 if os.path.exists(dataset_file):
     print("\033[1;36;40m\nUsing " + os.path.splitext(dataset_file)[0] + " Dataset file...\n")
 else:
-    print("\033[1;31;40mDataset file is missing, Check URL")
+    print("\033[1;31;40mDataset file is missing.. Check URL")
     exit()
 
 ############# Dataset Preperations
@@ -139,24 +139,24 @@ dfinfo.sort_values(by=['product_title'])
 ############# Custom user Variables
 # Sample size variable
 while True:
-    sample = input("\033[1;33;40mThere are \033[1;32;40m" + str(len(dataset)) + "\033[1;33;40m Samples found | " + "Enter the number of samples you want analyzed...\n\033[1;37;40m")
+    sample = input("\033[1;33;40mThere are \033[1;32;40m" + str(len(dataset)) + "\033[1;33;40m Samples found | " + "Enter the number of samples to be analyzed...\n\033[1;37;40m")
     if sample.isnumeric():
         sample = int(sample)
         dataset = dataset.sample(sample)
         dfinfo = dfinfo.sample(sample)
         if sample > len(dataset):
-            print("\033[1;31;40mYour Requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of your dataset!")
+            print("\033[1;31;40mYour requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of the dataset!")
             print("\033[1;31;40mSample size is adjusted to max dataset size of \033[1;37;40m" + str(len(dataset)))
             sample = len(dataset)
             dataset = dataset.sample(sample)
             dfinfo = dfinfo.sample(sample)
         break
     else:
-        print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
+        print("\033[1;31;40mPlease enter a positive number!\033[1;37;40m")
 
 
 while True:
-    classify = input("\033[1;33;40mType Yes to scan a specific product, otherwise scan the entire category (y,n)\n\033[1;37;40m")
+    classify = input("\033[1;33;40mEnter Y to scan a specific product, otherwise N to scan the entire category (y,n)\n\033[1;37;40m")
     if classify in no:
         classify="0"
         break
@@ -183,7 +183,7 @@ if (classify == "1"):
     txt.close()
 
     while True:
-        prodprint = input("\033[1;33;40mType yes to open the Avalible products in your texteditor, otherwise print in the command-line (y,n)\n\033[1;37;40m")
+        prodprint = input("\033[1;33;40mEnter Y to open the avalible products in the default text editor, otherwise N to display in the command-line (y,n)\n\033[1;37;40m")
         if prodprint in no:
             for x in range(0, len(dfinfo)):
                 print(str(x+1)  + " Product " + dfinfo.iloc[x]["product_title"] + " Searchable ID : " +  dfinfo.iloc[x]["product_id"] + "\n")
@@ -260,7 +260,7 @@ for x in range(0, len(dataset)):
     StarArray.append(dataset.iloc[x]["star_rating"])
     ProdArray.append(dataset.iloc[x]["product_id"])
 
-# Use textblob to get the sentiment polarity score from review_body, which is the actual written review
+# Use textblob to get the sentiment polarity score from review_body, which is the actual review
 print("\033[1;32;40mAnalyzing Sentiment...\n")
 for i in range(0, len(dataset)):
     t = TextBlob(dataset.iloc[i]["review_body"])
