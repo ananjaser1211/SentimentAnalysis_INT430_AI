@@ -78,7 +78,7 @@ datasets_url = [
 
 
 ############# Dataset Downloader
-print("\033[1;33;40mGathering Data from AmazonAWS, Please wait...")
+print("\033[1;33;40mGathering Data from AmazonAWS, please wait...")
 
 for i in range(len(datasets_url)):
   dtname = os.path.basename(datasets_url[i])
@@ -157,7 +157,7 @@ while True:
         dataset = dataset.sample(sample)
         dfinfo = dfinfo.sample(sample)
         if sample > len(dataset):
-            print("\033[1;31;40mYour requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of the dataset!")
+            print("\033[1;31;40mThe requested sample size of \033[1;37;40m" + str(sample) + "\033[1;31;40m is greater than the length of the dataset!")
             print("\033[1;31;40mSample size is adjusted to max dataset size of \033[1;37;40m" + str(len(dataset)))
             sample = len(dataset)
             dataset = dataset.sample(sample)
@@ -221,7 +221,7 @@ if (classify == "1"):
             print("\033[1;31;40mEnter either Y or N\033[1;37;40m")
 
     while True:
-        spec_prod = input("\033[1;31;40mPlease copy the desired product ID from your text editor, and paste it here\n\033[1;37;40m")
+        spec_prod = input("\033[1;31;40mPlease copy the desired product ID from your text editor and paste it here\n\033[1;37;40m")
         if not spec_prod:
             print("\033[1;31;40mPlease enter a product ID\n\033[1;37;40m")
         else:
@@ -231,16 +231,16 @@ if (classify == "1"):
 
 # Polarity display count
 while True:
-    commentsample = input("\033[1;33;40mHow many comments do you want displayed for each polarity?\n\033[1;37;40m")
+    commentsample = input("\033[1;33;40mHow many comments should be displayed for each polarity?\n\033[1;37;40m")
     if commentsample.isnumeric():
         commentsample = int(commentsample)
         break
     else:
-        print("\033[1;31;40mPlease Enter a positive number!\033[1;37;40m")
+        print("\033[1;31;40mPlease enter a positive number!\033[1;37;40m")
 
 # Display negative comments
 while True:
-    printneg = input("\033[1;33;40mDo you want to print Negative comments ? (y,n)\n\033[1;37;40m")
+    printneg = input("\033[1;33;40mDo you want to print Negative comments? (y,n)\n\033[1;37;40m")
     if printneg in yes:
         printneg = 1
         break
@@ -252,7 +252,7 @@ while True:
 
 # Display Neutral comments
 while True:
-    printnet = input("\033[1;33;40mDo you want to print Neutral comments ? (y,n)\n\033[1;37;40m")
+    printnet = input("\033[1;33;40mDo you want to print Neutral comments? (y,n)\n\033[1;37;40m")
     if printnet in yes:
         printnet = 1
         break
@@ -264,7 +264,7 @@ while True:
 
 # Display Positive comments
 while True:
-    printpos = input("\033[1;33;40mDo you want to print Positive comments ? (y,n)\n\033[1;37;40m")
+    printpos = input("\033[1;33;40mDo you want to print Positive comments? (y,n)\n\033[1;37;40m")
     if printpos in yes:
         printpos = 1
         break
@@ -276,7 +276,7 @@ while True:
 
     # Display Positive comments
     while True:
-        printpos = input("\033[1;33;40mDo you want to print Positive comments ? (y,n)\n\033[1;37;40m")
+        printpos = input("\033[1;33;40mDo you want to print Positive comments? (y,n)\n\033[1;37;40m")
         if printpos in yes:
             printpos = 1
             break
